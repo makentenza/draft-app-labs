@@ -6,7 +6,7 @@ def pipelineNames = ["dev", "test", "uat"]
 def appName = "cc-fe"
 
 //  Globals for across all the jobs
-def gitBaseUrlFE = "https://github.com/springdo/react-starter-app"
+def gitBaseUrlFE = "https://github.com/makentenza/draft-react-app-labs"
 def pipelineNamespace = "ci-cd"
 newLine = System.getProperty("line.separator")
 
@@ -134,7 +134,7 @@ pipelineNames.each {
                                 '-F v=0.0.1-${JOB_NAME}.${BUILD_NUMBER} \\' + newLine +
                                 '-F p=zip \\' + newLine +
                                 '-F file=@cc-fe.zip \\' + newLine +
-                                '-u admin:admin123 http://nexus-v2-ci-cd.svc.cluster.local:8081/nexus/service/local/artifact/maven/content')
+                                '-u admin:admin123 http://nexus-v2.ci-cd.svc.cluster.local:8081/nexus/service/local/artifact/maven/content')
                 }
             }
 
