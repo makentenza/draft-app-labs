@@ -21,18 +21,6 @@ def buildWrappers(context) {
     }
 }
 
-def notifySlack(context) {
-    context.slackNotifier {
-        notifyAborted(true)
-        notifyBackToNormal(true)
-        notifyFailure(true)
-        notifyNotBuilt(true)
-        notifyRegression(true)
-        notifyRepeatedFailure(true)
-        notifySuccess(true)
-        notifyUnstable(true)
-    }
-}
 
 def rotateLogs(context) {
     context.logRotator {
@@ -41,23 +29,6 @@ def rotateLogs(context) {
     }
 }
 
-def coverageReport(context) {
-    context.cobertura('coverage/clover.xml') {
-        failNoReports(true)
-        sourceEncoding('ASCII')
-        // the following targets are added by default to check the method, line and conditional level coverage
-        methodTarget(80, 40, 20)
-        lineTarget(80, 40, 20)
-        conditionalTarget(70, 40, 20)
-    }
-    context.publishHtml {
-        report('coverage/lcov-report') {
-            reportName('HTML Code Coverage Report')
-            allowMissing(false)
-            alwaysLinkToLastBuild(false)
-        }
-    }
-}
 
 pipelineNames.each {
     def pipelineName = it
@@ -69,7 +40,7 @@ pipelineNames.each {
 
     job(buildImageName) {
         description(jobDescription)
-        label('npm-build-pod')
+        label('npm-jenkins-slave')
 
         rotateLogs(delegate)
 
@@ -93,13 +64,13 @@ pipelineNames.each {
                 remote {
                     name('origin')
                     url(gitBaseUrlFE)
-                    credentials(jenkinsGitCreds)
+                    // credentials(jenkinsGitCreds)
                 }
                 if (pipelineName.contains('test')){
                     branch('master')
                 }
                 else {
-                    branch('develop')
+                    branch('master')
                 }
             }
         }
@@ -140,38 +111,6 @@ pipelineNames.each {
 
             archiveArtifacts('**')
 
-            coverageReport(delegate)
-
-            xUnitPublisher {
-                tools {
-                    jUnitType {
-                        pattern('test-report.xml')
-                        skipNoTestFiles(false)
-                        failIfNotNew(true)
-                        deleteOutputFiles(true)
-                        stopProcessingIfError(true)
-                    }
-                }
-                thresholds {
-                    failedThreshold {
-                        failureThreshold('0')
-                        unstableThreshold('')
-                        unstableNewThreshold('')
-                        failureNewThreshold('')
-                    }
-                }
-
-                thresholdMode(0)
-                testTimeMargin('3000')
-            }
-            // git publisher
-            //TODO add this back in
-            git {
-                tag("origin", "\${JOB_NAME}.\${BUILD_NUMBER}") {
-                    create(true)
-                    message("Automated commit by jenkins from \${JOB_NAME}.\${BUILD_NUMBER}")
-                }
-            }
 
             downstreamParameterized {
                 trigger(bakeImageName) {
@@ -184,8 +123,6 @@ pipelineNames.each {
                     }
                 }
             }
-
-            notifySlack(delegate)
         }
     }
 
@@ -237,7 +174,6 @@ pipelineNames.each {
                     }
                 }
             }
-            notifySlack(delegate)
         }
     }
 
@@ -289,9 +225,6 @@ pipelineNames.each {
                 waitTime('')
                 waitUnit('sec')
             }
-        }
-        publishers {
-            notifySlack(delegate)
         }
     }
     buildPipelineView(pipelineName  + '-' + appName + "-pipeline") {
