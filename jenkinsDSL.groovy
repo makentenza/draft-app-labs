@@ -74,11 +74,11 @@ pipelineNames.each {
                 }
             }
         }
-        if (pipelineName.contains('dev')){
+        //if (pipelineName.contains('dev')){
             triggers {
                 cron('*/5 * * * *')
             }
-        }
+        //}
         steps {
             steps {
                 shell('#!/bin/bash' + newLine +
@@ -141,11 +141,11 @@ pipelineNames.each {
         wrappers {
             buildWrappers(delegate)
         }
-        if (pipelineName.contains('dev')){
+        //if (pipelineName.contains('dev')){
             triggers {
                 cron('*/1 * * * *')
             }
-          }
+          //}
         steps {
             steps {
                 shell('#!/bin/bash' + newLine +
@@ -197,11 +197,11 @@ pipelineNames.each {
             buildWrappers(delegate)
 
         }
-        if (pipelineName.contains('dev')){
+        //if (pipelineName.contains('dev')){
             triggers {
                 cron('*/1 * * * *')
             }
-          }
+          //}
         steps {
             steps {
                 shell('#!/bin/bash' + newLine +
